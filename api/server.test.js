@@ -3,7 +3,7 @@ const server = require('./server.js');
 
 // Write your tests here
 test('sanity', () => {
-  expect(true).toBe(false)
+  expect(true).toBe(true)
 })
 
 describe('authentication endpoints', () => {

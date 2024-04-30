@@ -60,7 +60,7 @@ router.post('/login', async (req, res) => {
     }
 
     const user = await Users.findBy({ username });
-    if (user.length ===0 || !bcrypt.compareSync(password, user[0].password)) {
+    if (user.length === 0 || !bcrypt.compareSync(password, user[0].password)) {
       return res.status(401).json({ message: "invalid credentials" });
     }
 
