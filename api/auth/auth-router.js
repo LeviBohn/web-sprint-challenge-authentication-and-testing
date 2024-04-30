@@ -1,7 +1,29 @@
 const router = require('express').Router();
+const bcrypt = require('bcryptjs');
+const Users = require('../users/users-model.js');
 
-router.post('/register', (req, res) => {
-  res.end('implement register, please!');
+router.post('/register', async (req, res) => {
+  const { username, password } = req.body;
+
+  try {
+    if (!username | !password) {
+      return res.status(400).json({ message: "username and password required" });
+    }
+
+    const existingUser = await Users.findBy({ username });
+    if (existingUser.length > 0) {
+      return res. status(400).json({ message: "username taken" });
+    }
+
+    const hashedPassword = bcrypt.hashSync(password, 8);
+
+    const newUser = await Users.add({ username, password: hashedPassword });
+
+    res.status(201).json(newUser);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Error registering user" });
+  }
   /*
     IMPLEMENT
     You are welcome to build additional middlewares to help with the endpoint's functionality.
@@ -29,8 +51,29 @@ router.post('/register', (req, res) => {
   */
 });
 
-router.post('/login', (req, res) => {
-  res.end('implement login, please!');
+router.post('/login', async (req, res) => {
+  const { username, password } = req.body;
+
+  try {
+    if (!username || !password) {
+      return res.status(400).json({ message: "username and password required" });
+    }
+
+    const user = await Users.findBy({ username });
+    if (user.length ===0 || !bcrypt.compareSync(password, user[0].password)) {
+      return res.status(401).json({ message: "invalid credentials" });
+    }
+
+    const token = generateToken(user[0]);
+
+    res.status(200).json({
+      message: `welcome, ${username}`,
+      token: token
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Error logging in" });
+  }
   /*
     IMPLEMENT
     You are welcome to build additional middlewares to help with the endpoint's functionality.
@@ -55,5 +98,16 @@ router.post('/login', (req, res) => {
       the response body should include a string exactly as follows: "invalid credentials".
   */
 });
+
+function generateToken(user) {
+  const payload = {
+    subject: user.id,
+    username: user.username
+  };
+  const options = {
+    expiresIn: '1d'
+  };
+  return jwt.sign(payload, process.env.SECRET || "shh", options);
+}
 
 module.exports = router;
