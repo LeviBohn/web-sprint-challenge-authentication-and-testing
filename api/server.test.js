@@ -13,20 +13,20 @@ describe('authentication endpoints', () => {
       .send({ username: 'test' });
     expect(res.status).toBe(400);
   });
-  // it('should register a user and then log in successfully', async () => {
-  //   const registerRes = await request(server)
-  //     .post('/api/auth/register')
-  //     .send({ username: 'testuser', password: 'password' });
+  it('should register a user and then log in successfully', async () => {
+    const registerRes = await request(server)
+      .post('/api/auth/register')
+      .send({ username: 'testuser', password: 'password' });
 
-  //   expect(registerRes.status).toBe(201);
+    expect(registerRes.status).toBe(201);
 
-  //   const loginRes = await request(server)
-  //     .post('/api/auth/login')
-  //     .send({ username: 'testuser', password: 'password' });
+    const loginRes = await request(server)
+      .post('/api/auth/login')
+      .send({ username: 'testuser', password: 'password' });
 
-  //   expect(loginRes.status).toBe(200);
-  //   expect(loginRes.body).toHaveProperty('token');
-  // });
+    expect(loginRes.status).toBe(200);
+    expect(loginRes.body).toHaveProperty('token');
+  });
 });
 
 describe('jokes endpoints', () => {
