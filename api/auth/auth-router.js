@@ -6,7 +6,7 @@ router.post('/register', async (req, res) => {
   const { username, password } = req.body;
 
   try {
-    if (!username | !password) {
+    if (!username || !password) {
       return res.status(400).json({ message: "username and password required" });
     }
 
